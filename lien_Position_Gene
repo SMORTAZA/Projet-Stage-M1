@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+
+"""
+Author : Shogofa MORTAZA
+Wednesday, May the 10th 2017
+À partir d'un fichier (nomK, position) [obtenu à partir d'un fichier output], donne la liste des gènes.
+"""
+
+from pyensembl import EnsemblRelease
+
+data = EnsemblRelease(75) # will take a while to get the genome data installed in your system
+
+list_K = [2,4,4,4,4,4,6,6,7,8,13,14,18,21,11,1] #noms des chromosomes
+list_position = [212,32,62,126,172,179,68,91,15,32,65,84,63,25,33,15,239] #foyer issu du script integration_or_not
+    
+#print list_K
+print list_position
+
+gene_names = []
+
+for i in range(len(list_K)):
+    if list_K[i] == 'X':
+        list_K[i] = 23
+    #gene_names = data.gene_names_at_locus(contig=int(list_K[i]), position = (list_position[i]*1000000)-1000000, end = (list_position[i]*1000000)+1000000)
+    gene_names = data.gene_names_at_locus(contig=4, position = 32300000, end = 32500000)
+#    for j in range(len(gene_names)):
+#        print gene_names[j]
+        
+for j in range(len(gene_names)):
+    print gene_names[j]
+    
+    
+####Changement du nom de K ainsi que des locus    
+    
+gene_names = []
+gene_names = data.gene_names_at_locus(contig=12, position = 83300000, end = 83500000)
+for j in range(len(gene_names)):
+    print gene_names[j]
+    
+    
+    
+    
