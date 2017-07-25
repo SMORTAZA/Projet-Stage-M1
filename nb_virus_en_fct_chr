@@ -1,0 +1,167 @@
+# -*- coding: utf-8 -*-
+
+"""
+Friday, July the 21st
+Author : Shogofa
+A besoin de modif en fct de ce que l'on veut comme  info.
+Script permettant de tracer le nombre de reads du virus en fonction de la position sur un chromosome choisi.
+A besoin du fichier output_alignment_idpt.dat.indices.filtered.pcr5 
+"""
+
+import numpy as np
+#from pylab import *
+import matplotlib.pyplot as plt
+
+#Enregistrement des données
+f = open('/media/axel/RSG41/projet_liver/SRR1501151_output_alignment_idpt.dat.indices.filtered.pcr5')    
+ligne = f.readlines()
+f.close()
+
+##############
+
+BIN = 100000
+K = 'chr2'
+Min = 2123
+Max = 2125
+
+Nb_reads_Virus = 0 #Nombre total de reads du virus
+pos_list = [] #Liste contenant toutes les positions du chromosome choisi en contact avec le virus
+print 'Preparation des virus reads de ',K
+
+x_virus = []    
+
+if ligne != []: 
+    print ligne[0][:-1] #verification
+    for read in ligne: # Pour chaque read
+        K1,pos1,sens1,ind1,K2,pos2,sens2,ind2 = read.split()
+        #K1,pos1,K2,pos2 = read.split()
+        if K1 == 'epstein_virus' and K2 == K: #Si virus présent et que le chromosome contacté est le chromosome choisi
+            Nb_reads_Virus = Nb_reads_Virus + 1
+            pos_list.append(int(pos2)/BIN)
+            print 'K1',K1,pos2
+        elif K2 == 'epstein_virus' and K1 == K:
+            Nb_reads_Virus = Nb_reads_Virus + 1
+            pos_list.append(int(pos1)/BIN)
+            print 'K2',K2,pos1
+
+    #print len(pos_list)
+    print Nb_reads_Virus
+    
+    occ_virus = {} #Dictionnaire avec clé = position et valeur = occurence de ces positions
+              
+    for pos in pos_list:
+        if pos > Min and pos < Max : #Zoom sur le max du foyer de contact
+            if pos in occ_virus:
+                occ_virus[pos] += 1
+            else:
+                occ_virus[pos] = 1
+    
+    print len(occ_virus)    
+            
+    x_virus = [] # Liste contenant toutes les positions pour pouvoir faire l'histogramme
+        
+    for i in occ_virus:
+        fois = int(occ_virus[i])
+        for n in range(fois):
+            x_virus.append(i)
+    
+    print len(x_virus)
+    
+    if len(x_virus) == 0:
+        print "len(x_virus) est nul"
+        x_virus.append(0)
+    else:
+        print "len(x_virus) n'est pas nul"
+else :
+    x_virus.append(0)
+    
+#Plot    
+print 'debut histo'
+hist1, bins1 = np.histogram(x_virus,bins= int(max(x_virus)) + 1 )
+width = 0.7 * (bins1[1] - bins1[0])
+print len(hist1)
+center = (bins1[:-1] + bins1[1:]) / 2
+print 'debut plt'
+plt.bar(center, hist1, align='center', width=width, color='chocolate')
+#plt.show()
+#plt.savefig("200kb_virus_"+K+".png")
+#plt.close()  
+
+#########################
+#Permet la détermination du Min et du Max de la partie Zoomée (Max-Foyer)
+# Ou encore permet de tracer la densité du virus selon le chromosome choisi et de placer un gène quelconque à une position donnée
+
+BIN = 100000
+K = 'chr15'
+
+Nb_reads_Virus = 0 #Nombre total de reads du virus
+pos_list = [] #Liste contenant toutes les positions du chromosome choisi en contact avec le virus
+print 'Preparation des virus reads de ',K
+
+x_virus = []    
+
+if ligne != []: 
+    print ligne[0][:-1] #verification
+    for read in ligne: # Pour chaque read
+        K1,pos1,sens1,ind1,K2,pos2,sens2,ind2 = read.split()
+        #K1,pos1,K2,pos2 = read.split()
+        if K1 == 'epstein_virus' and K2 == K: #Si virus présent et que le chromosome contacté est le chromosome choisi
+            Nb_reads_Virus = Nb_reads_Virus + 1
+            pos_list.append(int(pos2)/BIN)
+            print 'K1',K1,pos2
+        elif K2 == 'epstein_virus' and K1 == K:
+            Nb_reads_Virus = Nb_reads_Virus + 1
+            pos_list.append(int(pos1)/BIN)
+            print 'K2',K2,pos1
+
+    #print len(pos_list)
+    print Nb_reads_Virus
+    
+    occ_virus = {} #Dictionnaire avec clé = position et valeur = occurence de ces positions
+      
+    for pos in pos_list:
+        if pos in occ_virus:
+            occ_virus[pos] += 1
+        else:
+            occ_virus[pos] = 1
+    
+    print len(occ_virus)    
+            
+    x_virus = [] # Liste contenant toutes les positions pour pouvoir faire l'histogramme
+        
+    for i in occ_virus:
+        fois = int(occ_virus[i])
+        for n in range(fois):
+            x_virus.append(i)
+    
+    print len(x_virus)
+    
+    if len(x_virus) == 0:
+        print "len(x_virus) est nul"
+        x_virus.append(0)
+    else:
+        print "len(x_virus) n'est pas nul"
+else :
+    x_virus.append(0)
+    
+#Plot    
+print 'debut histo'
+hist1, bins1 = np.histogram(x_virus,bins= int(max(x_virus)) + 1 )
+width = 0.7 * (bins1[1] - bins1[0])
+print len(hist1)
+center = (bins1[:-1] + bins1[1:]) / 2
+print 'debut plt'
+plt.bar(center, hist1, align='center', width=width, color='chocolate')
+
+#Ajout Positions des Gènes
+#g_min = 90810662	
+#g_max = 90859081
+#a = range(g_min/BIN,g_max/BIN)	
+#plt.plot(a,np.zeros(len(a)),'v',color="purple")
+#
+##quand une seule position
+#plt.plot(912,np.zeros(1),'v',color='yellow')
+
+
+
+
